@@ -50,7 +50,7 @@ function ChatPage() {
 
   return (
     <div className="flex h-screen bg-gray-950 text-white">
-      <Sidebar />
+      <Sidebar setSelectedQuestion={setInput}/>
 
       <div className="flex flex-col flex-1">
         <Navbar />
