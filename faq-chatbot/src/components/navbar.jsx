@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom"; // ✅ FIX
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -13,20 +14,22 @@ export default function Navbar() {
     <div className="h-16 px-6 flex items-center justify-between 
     bg-[#0b1220]/80 backdrop-blur-xl border-b border-white/5">
 
-      {/* Left: New Chat */}
-      <button
-        className="px-4 py-1.5 rounded-lg bg-white/5 border border-white/10 
-        text-sm text-gray-300 hover:bg-white/10 transition"
+      {/* 🔹 Left: Incident Button */}
+      <Link
+        to="/incident"
+        className="px-4 py-2 bg-blue-600 hover:bg-blue-700 
+        text-white text-sm rounded-lg transition-all duration-200 
+        active:scale-95 shadow-md"
       >
-        ➕ New Chat
-      </button>
+        + Raise Incident
+      </Link>
 
-      {/* Center: Title */}
+      {/* 🔹 Center: Title */}
       <h1 className="text-lg font-semibold text-gray-200 tracking-wide">
         FAQ Chatbot
       </h1>
 
-      {/* Right: Controls */}
+      {/* 🔹 Right: Controls */}
       <div className="flex items-center gap-4 relative">
 
         {/* Theme Toggle */}
@@ -38,7 +41,7 @@ export default function Navbar() {
           {dark ? "🌙" : "☀️"}
         </button>
 
-        {/* User Section */}
+        {/* User */}
         <div
           onClick={() => setIsOpen(!isOpen)}
           className="flex items-center gap-2 px-3 py-1.5 rounded-full 
@@ -47,9 +50,9 @@ export default function Navbar() {
         >
           <div className="w-8 h-8 rounded-full bg-gradient-to-br from-gray-600 to-gray-800 
           flex items-center justify-center text-sm font-semibold text-white">
-            S
+            A
           </div>
-          <span className="text-sm text-gray-300">Shubha</span>
+          <span className="text-sm text-gray-300">Admin</span>
         </div>
 
         {/* Dropdown */}

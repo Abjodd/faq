@@ -1,9 +1,12 @@
 import { useState } from "react";
+import { Routes, Route } from "react-router-dom";
 
 import Navbar from "./components/navbar";
 import Sidebar from "./components/sidebar";
+import IncidentPage from "./components/incedent";
 
-function App() {
+// 🔹 Chat Page (your current UI)
+function ChatPage() {
   const [messages, setMessages] = useState([
     { text: "Hi 👋 Ask me anything!", sender: "bot" },
   ]);
@@ -47,11 +50,9 @@ function App() {
 
   return (
     <div className="flex h-screen bg-gray-950 text-white">
-      {/* Sidebar */}
       <Sidebar />
 
       <div className="flex flex-col flex-1">
-        {/* Navbar */}
         <Navbar />
 
         {/* Chat Area */}
@@ -64,10 +65,10 @@ function App() {
               }`}
             >
               <div
-                className={`px-4 py-2 rounded-2xl max-w-md shadow-md transition-all duration-300 ${
+                className={`px-4 py-2 rounded-2xl max-w-md shadow-md ${
                   msg.sender === "user"
-                    ? "bg-blue-600 animate-fade-in"
-                    : "bg-gray-800 animate-fade-in"
+                    ? "bg-blue-600"
+                    : "bg-gray-800"
                 }`}
               >
                 {msg.text}
@@ -82,9 +83,9 @@ function App() {
           )}
         </div>
 
-        {/* Input Box */}
+        {/* Input */}
         <div className="p-4 border-t border-gray-800 bg-gray-900">
-          <div className="flex items-center gap-3 bg-gray-800 rounded-full px-4 py-2 shadow-inner">
+          <div className="flex items-center gap-3 bg-gray-800 rounded-full px-4 py-2">
             <input
               type="text"
               className="flex-1 bg-transparent outline-none text-sm"
@@ -96,7 +97,7 @@ function App() {
 
             <button
               onClick={sendMessage}
-              className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-full text-sm transition-all duration-200 active:scale-95"
+              className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-full text-sm"
             >
               Send
             </button>
@@ -104,6 +105,16 @@ function App() {
         </div>
       </div>
     </div>
+  );
+}
+
+// 🔹 Main App with routes
+function App() {
+  return (
+    <Routes>
+      <Route path="/" element={<ChatPage />} />
+      <Route path="/incident" element={<IncidentPage />} />
+    </Routes>
   );
 }
 
