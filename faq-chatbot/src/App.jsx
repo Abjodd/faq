@@ -49,7 +49,10 @@ function ChatPage() {
   };
 
   return (
-    <div className="flex h-screen bg-gray-950 text-white">
+    <div className="flex h-screen 
+          bg-white text-black 
+          dark:bg-[#0b1220] dark:text-gray-200 
+          transition-colors duration-300">
       <Sidebar setSelectedQuestion={setInput}/>
 
       <div className="flex flex-col flex-1">
@@ -67,8 +70,8 @@ function ChatPage() {
               <div
                 className={`px-4 py-2 rounded-2xl max-w-md shadow-md ${
                   msg.sender === "user"
-                    ? "bg-blue-600"
-                    : "bg-gray-800"
+                  ? "bg-gray-200 text-black dark:bg-[#1f2937] dark:text-white"
+                  : "bg-gray-100 text-black dark:bg-[#111827] dark:text-gray-200"
                 }`}
               >
                 {msg.text}
@@ -77,15 +80,16 @@ function ChatPage() {
           ))}
 
           {loading && (
-            <div className="text-gray-400 text-sm animate-pulse">
+            <div className="dark:text-gray-400 text-gray-500 text-sm animate-pulse">
               Bot is typing...
             </div>
           )}
         </div>
 
         {/* Input */}
-        <div className="p-4 border-t border-gray-800 bg-gray-900">
-          <div className="flex items-center gap-3 bg-gray-800 rounded-full px-4 py-2">
+        <div className="p-4 border-tbg-gray-100 border-gray-200 
+          dark:bg-[#0f172a] dark:border-white/10">
+          <div className="flex items-center gap-3 bg-gray-200 dark:bg-[#1f2937] rounded-full px-4 py-2">
             <input
               type="text"
               className="flex-1 bg-transparent outline-none text-sm"
@@ -97,7 +101,9 @@ function ChatPage() {
 
             <button
               onClick={sendMessage}
-              className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-full text-sm"
+              className="bg-gray-900 text-white hover:bg-black 
+              dark:bg-blue-600 dark:text-white dark:hover:bg-blue-700
+              px-4 py-2 rounded-full text-sm transition-all duration-200 active:scale-95"
             >
               Send
             </button>

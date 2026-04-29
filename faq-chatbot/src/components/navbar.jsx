@@ -3,29 +3,31 @@ import { Link } from "react-router-dom"; // ✅ FIX
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
-  const [dark, setDark] = useState(true);
+  const [isDark, setIsDark] = useState(
+  document.documentElement.classList.contains("dark"));
 
   const toggleTheme = () => {
-    setDark(!dark);
     document.documentElement.classList.toggle("dark");
+    setIsDark((prev) => !prev);
   };
 
   return (
     <div className="h-16 px-6 flex items-center justify-between 
-    bg-[#0b1220]/80 backdrop-blur-xl border-b border-white/5">
+      bg-gray-200 text-black border-b border-gray-200 backdrop-blur-xl
+      dark:bg-[#0f1a2b] dark:text-gray-200 dark:border-white/5">
 
       {/* 🔹 Left: Incident Button */}
       <Link
         to="/incident"
-        className="px-4 py-2 bg-blue-600 hover:bg-blue-700 
-        text-white text-sm rounded-lg transition-all duration-200 
-        active:scale-95 shadow-md"
+        className="bg-gray-900 text-white hover:bg-black 
+        dark:bg-blue-600 dark:text-white dark:hover:bg-blue-700
+        px-4 py-2 rounded-full text-sm transition-all duration-200 active:scale-95"
       >
         + Raise Incident
       </Link>
 
       {/* 🔹 Center: Title */}
-      <h1 className="text-lg font-semibold text-gray-200 tracking-wide">
+      <h1 className="text-lg font-semibold  tracking-wide">
         FAQ Chatbot
       </h1>
 
@@ -38,7 +40,7 @@ export default function Navbar() {
           className="w-9 h-9 flex items-center justify-center rounded-full 
           bg-white/5 hover:bg-white/10 transition text-gray-300"
         >
-          {dark ? "🌙" : "☀️"}
+         {isDark ? "🌙" : "☀️"}
         </button>
 
         {/* User */}
@@ -52,7 +54,7 @@ export default function Navbar() {
           flex items-center justify-center text-sm font-semibold text-white">
             A
           </div>
-          <span className="text-sm text-gray-300">Admin</span>
+          <span className="text-sm ">Admin</span>
         </div>
 
         {/* Dropdown */}
