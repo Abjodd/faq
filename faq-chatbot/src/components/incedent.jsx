@@ -60,8 +60,10 @@ export default function IncidentPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-950 text-white flex items-center justify-center p-6">
-      <div className="w-full max-w-2xl bg-gray-900 p-6 rounded-2xl shadow-lg border border-gray-800">
+    <div className="min-h-screen bg-gray-50 text-gray-900 
+        dark:bg-[#0b1220] dark:text-gray-200 flex items-center justify-center p-6">
+      <div className="w-full max-w-2xl p-6 rounded-2xl shadow-lg border bg-white border border-gray-200 shadow-xl rounded-2xl
+        dark:bg-[#111827] dark:border-white/10">
 
         {/* 🔹 Header */}
         <div className="flex justify-between items-center mb-6">
@@ -69,7 +71,7 @@ export default function IncidentPage() {
 
           <Link
             to="/"
-            className="text-sm text-blue-400 hover:underline"
+           className="text-sm text-black hover:underline dark:text-blue-400"
           >
             ← Back
           </Link>
@@ -84,7 +86,10 @@ export default function IncidentPage() {
             placeholder="Your Name"
             value={formData.name}
             onChange={handleChange}
-            className="w-full p-3 rounded-lg bg-gray-800 border border-gray-700 focus:border-blue-500 outline-none transition"
+          className="w-full p-3 rounded-lg border border-gray-400 bg-white text-gray-900 
+            focus:outline-none focus:ring-1 focus:ring-gray-400 focus:border-gray-500
+            dark:bg-[#1f2937] dark:border-gray-600 dark:text-white 
+            dark:focus:border-gray-400 dark:focus:ring-gray-700 transition"
             required
           />
 
@@ -95,7 +100,10 @@ export default function IncidentPage() {
             placeholder="Your Email"
             value={formData.email}
             onChange={handleChange}
-            className="w-full p-3 rounded-lg bg-gray-800 border border-gray-700 focus:border-blue-500 outline-none transition"
+            className="w-full p-3 rounded-lg border border-gray-400 bg-white text-gray-900 
+            focus:outline-none focus:ring-1 focus:ring-gray-400 focus:border-gray-500
+            dark:bg-[#1f2937] dark:border-gray-600 dark:text-white 
+            dark:focus:border-gray-400 dark:focus:ring-gray-700 transition"
             required
           />
 
@@ -105,7 +113,11 @@ export default function IncidentPage() {
               name="category"
               value={formData.category}
               onChange={handleChange}
-              className="p-3 rounded-lg bg-gray-800 border border-gray-700"
+              className="w-full p-3 rounded-lg border border-gray-400 bg-white text-gray-900
+              focus:outline-none focus:ring-1 focus:ring-gray-200 focus:border-gray-500
+              dark:bg-[#1f2937] dark:border-gray-600 dark:text-white 
+              dark:focus:border-gray-400 dark:focus:ring-gray-700
+              transition"
               required
             >
               <option value="">Category</option>
@@ -119,7 +131,11 @@ export default function IncidentPage() {
               name="priority"
               value={formData.priority}
               onChange={handleChange}
-              className="p-3 rounded-lg bg-gray-800 border border-gray-700"
+              className="w-full p-3 rounded-lg border border-gray-400 bg-white text-gray-900
+              focus:outline-none focus:ring-1 focus:ring-gray-200 focus:border-gray-500
+              dark:bg-[#1f2937] dark:border-gray-600 dark:text-white 
+              dark:focus:border-gray-400 dark:focus:ring-gray-700
+              transition"
             >
               <option>Low</option>
               <option>Medium</option>
@@ -135,7 +151,10 @@ export default function IncidentPage() {
             value={formData.description}
             onChange={handleChange}
             rows="4"
-            className="w-full p-3 rounded-lg bg-gray-800 border border-gray-700 focus:border-blue-500 outline-none"
+            className="w-full p-3 rounded-lg border border-gray-400 bg-white text-gray-900 
+            focus:outline-none focus:ring-1 focus:ring-gray-400 focus:border-gray-500
+            dark:bg-[#1f2937] dark:border-gray-600 dark:text-white 
+            dark:focus:border-gray-400 dark:focus:ring-gray-700 transition"
             required
           />
 
@@ -146,15 +165,20 @@ export default function IncidentPage() {
             value={formData.suggestion}
             onChange={handleChange}
             rows="3"
-            className="w-full p-3 rounded-lg bg-gray-800 border border-gray-700"
+            className="w-full p-3 rounded-lg border border-gray-400 bg-white text-gray-900 
+            focus:outline-none focus:ring-1 focus:ring-gray-400 focus:border-gray-500
+            dark:bg-[#1f2937] dark:border-gray-600 dark:text-white 
+            dark:focus:border-gray-400 dark:focus:ring-gray-700 transition"
           />
 
           {/* Submit */}
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-blue-600 hover:bg-blue-700 py-3 rounded-lg transition-all duration-200 active:scale-95 disabled:opacity-50"
-          >
+className="w-full 
+bg-gray-900 text-white hover:bg-black 
+dark:bg-blue-600 dark:text-white dark:hover:bg-blue-700
+py-3 rounded-lg transition-all duration-200 active:scale-95 disabled:opacity-50"          >
             {loading ? "Submitting..." : "Submit Incident"}
           </button>
         </form>
