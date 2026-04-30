@@ -45,6 +45,7 @@ const DARK = {
   footer:           { borderTop: "1px solid rgba(239,159,39,0.10)" },
   footerText:       { color: "#374151" },
   footerDot:        { background: "#EF9F27" },
+  closeBtn:         { color: "#9ca3af", border: "1px solid rgba(255,255,255,0.12)" },
 };
 
 const LIGHT = {
@@ -70,9 +71,10 @@ const LIGHT = {
   footer:           { borderTop: "1px solid rgba(0,0,0,0.07)" },
   footerText:       { color: "#9ca3af" },
   footerDot:        { background: "#1a1a1a" },
+  closeBtn:         { color: "#6b7280", border: "1px solid rgba(0,0,0,0.15)" },
 };
 
-export default function Sidebar({ setSelectedQuestion, isDark = true }) {
+export default function Sidebar({ setSelectedQuestion, isDark = true, isOpen = false, onClose }) {
   const [search, setSearch]   = useState("");
   const [active, setActive]   = useState(null);
   const [hovered, setHovered] = useState(null);
@@ -95,122 +97,163 @@ export default function Sidebar({ setSelectedQuestion, isDark = true }) {
   const handleSelect = (item) => {
     setActive(item.idx);
     setSelectedQuestion?.(item.q);
+    onClose?.();
+  };
+
+  // On desktop: always visible as a sidebar column
+  // On mobile: slide-in drawer from left, controlled by isOpen
+  const sidebarStyle = {
+    ...styles.shell,
+    ...t.shell,
+    // Desktop: static in flow; Mobile: fixed drawer
+    position: "relative",
+    transform: "none",
+    transition: "background 0.25s, border-color 0.25s",
+    // Responsive overrides via inline media — we use a JS approach
+    zIndex: 50,
   };
 
   return (
-    <div style={{ ...styles.shell, ...t.shell }}>
+    <>
+      {/* Sidebar — desktop always shown, mobile slide-in */}
+      <style>{`
+        .sidebar-shell {
+          width: 340px;
+          height: 100vh;
+          display: flex;
+          flex-direction: column;
+          font-family: 'IBM Plex Mono', 'Courier New', monospace;
+          position: relative;
+          overflow: hidden;
+          transition: background 0.25s, border-color 0.25s, transform 0.28s cubic-bezier(0.4,0,0.2,1);
+          flex-shrink: 0;
+          z-index: 50;
+        }
+        @media (max-width: 768px) {
+          .sidebar-shell {
+            position: fixed !important;
+            top: 0; left: 0; bottom: 0;
+            width: min(320px, 85vw) !important;
+            transform: ${isOpen ? "translateX(0)" : "translateX(-100%)"};
+            box-shadow: ${isOpen ? "4px 0 24px rgba(0,0,0,0.3)" : "none"};
+          }
+        }
+      `}</style>
 
-      {t.showGrid && <div style={styles.gridBg} />}
+      <div className="sidebar-shell" style={{ ...t.shell }}>
+        {t.showGrid && <div style={styles.gridBg} />}
 
-      {/* ── Header ─────────────────────────────────────────────── */}
-      <div style={{ ...styles.header, ...t.header }}>
-        <div style={styles.logoRow}>
-          <div style={styles.logoBox}>
-            <span style={styles.logoBoxText}>SAP</span>
-          </div>
-          <div>
-            <div style={{ ...styles.logoTitle, ...t.logoTitle }}>PP Knowledge Base</div>
-            <div style={{ ...styles.logoSub, ...t.logoSub }}>PRODUCTION PLANNING</div>
-          </div>
-          <div style={styles.pulseDot} />
-        </div>
-
-        <div style={styles.searchWrap}>
-          <span style={{ ...styles.searchIcon, ...t.searchIcon }}>⌕</span>
-          <input
-            style={{ ...styles.searchInput, ...t.searchInput }}
-            type="text"
-            placeholder="Search FAQs..."
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-            onFocus={e  => { e.target.style.borderColor = t.searchFocusColor; }}
-            onBlur={e   => { e.target.style.borderColor = t.searchBlurColor; }}
-          />
-          {search && (
-            <button style={{ ...styles.clearBtn, ...t.clearBtn }} onClick={() => setSearch("")}>
-              ✕
-            </button>
-          )}
-        </div>
-
-        <div style={{ ...styles.countBadge, ...t.countBadge }}>
-          {total} question{total !== 1 ? "s" : ""} indexed
-        </div>
-      </div>
-
-      {/* ── List ───────────────────────────────────────────────── */}
-      <div style={styles.listScroll}>
-        {total === 0 && (
-          <div style={{ ...styles.noResults, ...t.noResults }}>No matches found</div>
-        )}
-
-        {Object.entries(grouped).map(([cat, items]) => {
-          const c = CAT_COLORS[cat] || CAT_COLORS.Concepts;
-          const labelColor = t.catLabel(c);
-
-          return (
-            <div key={cat}>
-              <div style={styles.catLabel}>
-                <span style={{ ...styles.catDot, background: c.dot }} />
-                <span style={{ ...styles.catText, color: labelColor }}>{cat}</span>
-                <div style={{ ...styles.catLine, borderColor: c.border }} />
-                <span style={{ ...styles.catCount, color: labelColor }}>{items.length}</span>
-              </div>
-
-              {items.map((item) => {
-                const isActive  = active  === item.idx;
-                const isHovered = hovered === item.idx;
-
-                return (
-                  <button
-                    key={item.idx}
-                    style={{
-                      ...styles.faqBtn,
-                      background:      isActive ? c.bg : isHovered ? t.btnHoverBg : "transparent",
-                      borderColor:     isActive ? c.border : "transparent",
-                      borderLeftColor: isActive ? c.dot : isHovered ? t.btnHoverLeft : "transparent",
-                    }}
-                    onClick={() => handleSelect(item)}
-                    onMouseEnter={() => setHovered(item.idx)}
-                    onMouseLeave={() => setHovered(null)}
-                  >
-                    <span style={{ ...styles.qNum, color: isActive ? c.dot : t.qNumDefault }}>
-                      Q{String(item.idx + 1).padStart(2, "0")}
-                    </span>
-                    <span style={{
-                      ...styles.qText,
-                      color: isActive ? t.qTextActive : isHovered ? t.qTextHover : t.qTextDefault,
-                    }}>
-                      {item.q}
-                    </span>
-                    <span style={{ ...styles.qArrow, opacity: isActive || isHovered ? 1 : 0, color: c.dot }}>
-                      ›
-                    </span>
-                  </button>
-                );
-              })}
+        {/* Header */}
+        <div style={{ ...styles.header, ...t.header }}>
+          <div style={styles.logoRow}>
+            <div style={styles.logoBox}>
+              <span style={styles.logoBoxText}>SAP</span>
             </div>
-          );
-        })}
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ ...styles.logoTitle, ...t.logoTitle }}>PP Knowledge Base</div>
+              <div style={{ ...styles.logoSub, ...t.logoSub }}>PRODUCTION PLANNING</div>
+            </div>
+            <div style={styles.pulseDot} />
+            {/* Close button — only useful on mobile */}
+            <button
+              onClick={onClose}
+              style={{
+                ...styles.closeBtn, ...t.closeBtn,
+                display: "none", // hidden by default, shown via media query below
+              }}
+              className="sidebar-close-btn"
+              aria-label="Close sidebar"
+            >✕</button>
+          </div>
+
+          <div style={styles.searchWrap}>
+            <span style={{ ...styles.searchIcon, ...t.searchIcon }}>⌕</span>
+            <input
+              style={{ ...styles.searchInput, ...t.searchInput }}
+              type="text"
+              placeholder="Search FAQs..."
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              onFocus={e => { e.target.style.borderColor = t.searchFocusColor; }}
+              onBlur={e => { e.target.style.borderColor = t.searchBlurColor; }}
+            />
+            {search && (
+              <button style={{ ...styles.clearBtn, ...t.clearBtn }} onClick={() => setSearch("")}>✕</button>
+            )}
+          </div>
+
+          <div style={{ ...styles.countBadge, ...t.countBadge }}>
+            {total} question{total !== 1 ? "s" : ""} indexed
+          </div>
+        </div>
+
+        {/* List */}
+        <div style={styles.listScroll}>
+          {total === 0 && (
+            <div style={{ ...styles.noResults, ...t.noResults }}>No matches found</div>
+          )}
+
+          {Object.entries(grouped).map(([cat, items]) => {
+            const c = CAT_COLORS[cat] || CAT_COLORS.Concepts;
+            const labelColor = t.catLabel(c);
+            return (
+              <div key={cat}>
+                <div style={styles.catLabel}>
+                  <span style={{ ...styles.catDot, background: c.dot }} />
+                  <span style={{ ...styles.catText, color: labelColor }}>{cat}</span>
+                  <div style={{ ...styles.catLine, borderColor: c.border }} />
+                  <span style={{ ...styles.catCount, color: labelColor }}>{items.length}</span>
+                </div>
+
+                {items.map((item) => {
+                  const isActive  = active  === item.idx;
+                  const isHovered = hovered === item.idx;
+                  return (
+                    <button
+                      key={item.idx}
+                      style={{
+                        ...styles.faqBtn,
+                        background:      isActive ? c.bg : isHovered ? t.btnHoverBg : "transparent",
+                        borderColor:     isActive ? c.border : "transparent",
+                        borderLeftColor: isActive ? c.dot : isHovered ? t.btnHoverLeft : "transparent",
+                      }}
+                      onClick={() => handleSelect(item)}
+                      onMouseEnter={() => setHovered(item.idx)}
+                      onMouseLeave={() => setHovered(null)}
+                    >
+                      <span style={{ ...styles.qNum, color: isActive ? c.dot : t.qNumDefault }}>
+                        Q{String(item.idx + 1).padStart(2, "0")}
+                      </span>
+                      <span style={{ ...styles.qText, color: isActive ? t.qTextActive : isHovered ? t.qTextHover : t.qTextDefault }}>
+                        {item.q}
+                      </span>
+                      <span style={{ ...styles.qArrow, opacity: isActive || isHovered ? 1 : 0, color: c.dot }}>›</span>
+                    </button>
+                  );
+                })}
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Footer */}
+        <div style={{ ...styles.footer, ...t.footer }}>
+          <span style={{ ...styles.footerDot, ...t.footerDot }} />
+          <span style={{ ...styles.footerText, ...t.footerText }}>SAP PP · Production Planning Module</span>
+        </div>
       </div>
 
-      {/* ── Footer ─────────────────────────────────────────────── */}
-      <div style={{ ...styles.footer, ...t.footer }}>
-        <span style={{ ...styles.footerDot, ...t.footerDot }} />
-        <span style={{ ...styles.footerText, ...t.footerText }}>SAP PP · Production Planning Module</span>
-      </div>
-    </div>
+      {/* Show close button on mobile via global style */}
+      <style>{`
+        @media (max-width: 768px) {
+          .sidebar-close-btn { display: flex !important; }
+        }
+      `}</style>
+    </>
   );
 }
 
 const styles = {
-  shell: {
-    width: "380px", height: "100vh",
-    display: "flex", flexDirection: "column",
-    fontFamily: "'IBM Plex Mono', 'Courier New', monospace",
-    position: "relative", overflow: "hidden",
-    transition: "background 0.25s, border-color 0.25s",
-  },
   gridBg: {
     position: "absolute", inset: 0, pointerEvents: "none", zIndex: 0,
     backgroundImage:
@@ -218,33 +261,55 @@ const styles = {
       "linear-gradient(90deg,rgba(239,159,39,0.03) 1px,transparent 1px)",
     backgroundSize: "28px 28px",
   },
-  header: {
-    padding: "20px 18px 16px", position: "relative", zIndex: 1,
-    transition: "background 0.25s, border-color 0.25s",
-  },
-  logoRow:    { display: "flex", alignItems: "center", gap: "12px", marginBottom: "16px" },
-  logoBox:    { width: "38px", height: "38px", background: "#EF9F27", borderRadius: "8px", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 },
-  logoBoxText:{ fontSize: "12px", fontWeight: "700", color: "#0d0f14", letterSpacing: "-0.3px" },
-  logoTitle:  { fontSize: "14px", fontWeight: "600", letterSpacing: "0.3px", fontFamily: "'IBM Plex Mono', monospace", transition: "color 0.25s" },
-  logoSub:    { fontSize: "10px", letterSpacing: "1.5px", marginTop: "2px", transition: "color 0.25s" },
-  pulseDot:   { width: "8px", height: "8px", borderRadius: "50%", background: "#5DCAA5", marginLeft: "auto", flexShrink: 0, boxShadow: "0 0 6px rgba(93,202,165,0.5)" },
+  header: { padding: "16px 16px 14px", position: "relative", zIndex: 1, transition: "background 0.25s, border-color 0.25s" },
+  logoRow:    { display: "flex", alignItems: "center", gap: "10px", marginBottom: "14px", flexWrap: "nowrap" },
+  logoBox:    { width: "36px", height: "36px", background: "#EF9F27", borderRadius: "8px", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 },
+  logoBoxText:{ fontSize: "11px", fontWeight: "700", color: "#0d0f14", letterSpacing: "-0.3px" },
+  logoTitle:  { fontSize: "13px", fontWeight: "600", letterSpacing: "0.3px", fontFamily: "'IBM Plex Mono', monospace", transition: "color 0.25s", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" },
+  logoSub:    { fontSize: "9px", letterSpacing: "1.5px", marginTop: "2px", transition: "color 0.25s" },
+  pulseDot:   { width: "8px", height: "8px", borderRadius: "50%", background: "#5DCAA5", flexShrink: 0, boxShadow: "0 0 6px rgba(93,202,165,0.5)" },
+  closeBtn: {
+  position: "absolute",
+  top: "20px",
+  right: "-14px", // makes it stick outside sidebar
+
+  width: "32px",
+  height: "32px",
+  borderRadius: "50%",
+
+  background: "#111",
+  color: "#fff",
+  border: "none",
+
+  display: "flex",              // ❗ important
+  alignItems: "center",
+  justifyContent: "center",
+
+  fontSize: "16px",
+  cursor: "pointer",
+
+  boxShadow: "0 2px 8px rgba(0,0,0,0.2)",
+  transition: "all 0.3s ease",
+
+  flexShrink: 0,
+},
   searchWrap: { position: "relative" },
   searchIcon: { position: "absolute", left: "11px", top: "50%", transform: "translateY(-50%)", fontSize: "16px", pointerEvents: "none", lineHeight: 1, transition: "color 0.25s" },
-  searchInput:{ width: "100%", borderRadius: "9px", padding: "10px 34px 10px 34px", fontSize: "13px", fontFamily: "'IBM Plex Mono', monospace", outline: "none", transition: "border-color 0.2s, background 0.25s, color 0.25s", boxSizing: "border-box" },
-  clearBtn:   { position: "absolute", right: "10px", top: "50%", transform: "translateY(-50%)", background: "none", border: "none", cursor: "pointer", fontSize: "12px", padding: "2px 4px", lineHeight: 1, transition: "color 0.25s" },
-  countBadge: { fontSize: "11px", textAlign: "right", marginTop: "8px", letterSpacing: "0.5px", transition: "color 0.25s" },
-  listScroll: { overflowY: "auto", flex: 1, padding: "10px", position: "relative", zIndex: 1, scrollbarWidth: "thin" },
+  searchInput:{ width: "100%", borderRadius: "9px", padding: "9px 32px 9px 32px", fontSize: "12px", fontFamily: "'IBM Plex Mono', monospace", outline: "none", transition: "border-color 0.2s, background 0.25s, color 0.25s", boxSizing: "border-box" },
+  clearBtn:   { position: "absolute", right: "10px", top: "50%", transform: "translateY(-50%)", background: "none", border: "none", cursor: "pointer", fontSize: "11px", padding: "2px 4px", lineHeight: 1, transition: "color 0.25s" },
+  countBadge: { fontSize: "10px", textAlign: "right", marginTop: "7px", letterSpacing: "0.5px", transition: "color 0.25s" },
+  listScroll: { overflowY: "auto", flex: 1, padding: "8px", position: "relative", zIndex: 1, scrollbarWidth: "thin" },
   noResults:  { padding: "32px", textAlign: "center", fontSize: "12px", letterSpacing: "1px", transition: "color 0.25s" },
-  catLabel:   { display: "flex", alignItems: "center", gap: "8px", padding: "14px 8px 6px" },
+  catLabel:   { display: "flex", alignItems: "center", gap: "8px", padding: "12px 8px 5px" },
   catDot:     { width: "6px", height: "6px", borderRadius: "50%", flexShrink: 0 },
   catText:    { fontSize: "10px", letterSpacing: "1.8px", textTransform: "uppercase", fontWeight: "600", flexShrink: 0, transition: "color 0.25s" },
   catLine:    { flex: 1, height: 0, borderTop: "1px solid", opacity: 0.4 },
   catCount:   { fontSize: "10px", fontWeight: "600", flexShrink: 0, opacity: 0.7, transition: "color 0.25s" },
-  faqBtn:     { display: "flex", alignItems: "flex-start", gap: "10px", padding: "10px 10px 10px 12px", borderRadius: "9px", cursor: "pointer", border: "1px solid transparent", borderLeft: "2px solid transparent", textAlign: "left", transition: "all 0.16s ease", width: "100%", marginBottom: "3px" },
+  faqBtn:     { display: "flex", alignItems: "flex-start", gap: "10px", padding: "9px 10px 9px 12px", borderRadius: "9px", cursor: "pointer", border: "1px solid transparent", borderLeft: "2px solid transparent", textAlign: "left", transition: "all 0.16s ease", width: "100%", marginBottom: "2px" },
   qNum:       { fontSize: "10px", minWidth: "26px", paddingTop: "2px", letterSpacing: "0.5px", flexShrink: 0, transition: "color 0.16s", fontWeight: "600" },
-  qText:      { fontSize: "13px", lineHeight: "1.6", flex: 1, transition: "color 0.16s" },
-  qArrow:     { fontSize: "16px", flexShrink: 0, transition: "opacity 0.16s", lineHeight: 1.3 },
-  footer:     { padding: "12px 18px", display: "flex", alignItems: "center", gap: "8px", position: "relative", zIndex: 1, transition: "border-color 0.25s" },
+  qText:      { fontSize: "12px", lineHeight: "1.6", flex: 1, transition: "color 0.16s", textAlign: "left" },
+  qArrow:     { fontSize: "15px", flexShrink: 0, transition: "opacity 0.16s", lineHeight: 1.3 },
+  footer:     { padding: "10px 16px", display: "flex", alignItems: "center", gap: "8px", position: "relative", zIndex: 1, transition: "border-color 0.25s" },
   footerDot:  { display: "inline-block", width: "6px", height: "6px", borderRadius: "50%", opacity: 0.5, flexShrink: 0, transition: "background 0.25s" },
-  footerText: { fontSize: "10px", letterSpacing: "0.8px", textTransform: "uppercase", transition: "color 0.25s" },
+  footerText: { fontSize: "9px", letterSpacing: "0.8px", textTransform: "uppercase", transition: "color 0.25s" },
 };
