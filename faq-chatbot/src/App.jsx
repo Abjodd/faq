@@ -63,7 +63,7 @@ function IncidentPromptBubble({ t, onSelect }) {
       ...t.botBubble,
     }}>
       <p style={{ margin: "0 0 12px 0" }}>
-        I detected the keyword <strong>incident</strong>. What would you like to do?
+        <strong>incident</strong>. What would you like to do?
       </p>
       <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
         <button
@@ -321,7 +321,7 @@ function ChatPage({ isDark, setIsDark }) {
       const res = await fetch(`${API_BASE}/chat/`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ description: `Give me the incident details for incident id ${id}` }),
+        body: JSON.stringify({ description: `Give me the status for incident id ${id}` }),
       });
       const data = await res.json();
       addMsg({ type: "bot", text: data.reply || "No response from server" });
@@ -398,7 +398,7 @@ function ChatPage({ isDark, setIsDark }) {
       return (
         <div key={i} style={{ display: "flex", justifyContent: "flex-start" }}>
           <div style={{ padding: "10px 16px", borderRadius: "18px 18px 18px 4px", maxWidth: "520px", fontSize: "13px", fontFamily: "'IBM Plex Mono', monospace", ...t.botBubble }}>
-            What would you like to do with an incident?
+            <strong>DONE..</strong>
           </div>
         </div>
       );
