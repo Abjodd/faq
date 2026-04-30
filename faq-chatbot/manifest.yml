@@ -1,0 +1,6 @@
+applications:
+  - name: faq-chatbot
+    memory: 64M
+    buildpacks:
+      - staticfile_buildpack
+    path: dist

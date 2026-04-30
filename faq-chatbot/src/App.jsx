@@ -246,7 +246,7 @@ function ChatPage({ isDark, setIsDark, sidebarOpen, setSidebarOpen }) {
     try {
       const res = await fetch(`${API_BASE}/chat/`, {
         method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ description: `Give me the incident details for incident id ${id}` }),
+        body: JSON.stringify({ description: `Give me the status of incident id ${id}` }),
       });
       const data = await res.json();
       addMsg({ type: "bot", text: data.reply || "No response from server" });
